@@ -16,7 +16,7 @@ func NewCreateUserHandler(userRepo user.Repository) CreateUserHandler {
 	return CreateUserHandler{userRepo: userRepo}
 }
 
-func (h CreateUserHandler) handle(ctx context.Context, user *user.User)error  {
+func (h CreateUserHandler) Handle(ctx context.Context, user *user.User)error  {
 	err := h.userRepo.Create(ctx, user)
 	return err
 }
