@@ -39,6 +39,7 @@ func NewAgent(config Config) (*Agent, error) {
 		shutdowns: make(chan struct{}),
 	}
 	setupsFn := []func() error{
+		a.setupRepository,
 		a.setupHttpServer,
 	}
 	for _, fn := range setupsFn {

@@ -21,5 +21,6 @@ func (h GetProfileHandler) Handler(ctx context.Context, username string) (*user.
 	if err != nil {
 		return &user.User{}, err
 	}
+	u.HidePassword()
 	return u, nil
 }

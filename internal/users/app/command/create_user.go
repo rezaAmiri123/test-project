@@ -17,6 +17,12 @@ func NewCreateUserHandler(userRepo user.Repository) CreateUserHandler {
 }
 
 func (h CreateUserHandler) Handle(ctx context.Context, user *user.User)error  {
+	if err :=user.Validate();err!= nil{
+		return err
+	}
+	if err:=user.HashPassword();err!= nil{
+		return err
+	}
 	err := h.userRepo.Create(ctx, user)
 	return err
 }

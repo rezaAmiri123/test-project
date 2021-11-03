@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/pkg/errors"
 	"github.com/rezaAmiri123/test-project/internal/users/domain/user"
 )
@@ -57,11 +58,14 @@ func NewGORMUserRepository(config GORMConfig) (*GORMUserRepository, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot connect database")
 	}
+	if err := migrate(db);err!=nil{
+		return nil,errors.Wrap(err,"cannot migrate database")
+	}
 	return &GORMUserRepository{db: db}, nil
 }
 
 func (r *GORMUserRepository) Create(ctx context.Context, user *user.User) error {
-	var gormUser GORMUserModel
+	gormUser :=&GORMUserModel{}
 	gormUser.protoGORMUser(user)
 	err := r.db.Create(gormUser).Error
 	if err != nil {
@@ -76,4 +80,10 @@ func (r *GORMUserRepository) GetByUsername(ctx context.Context, username string)
 		return nil, errors.Wrap(err, "cannot find user")
 	}
 	return gormUser.protoDomainUser(), nil
+}
+
+func migrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&GORMUserModel{},
+	).Error
 }

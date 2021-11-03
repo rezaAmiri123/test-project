@@ -15,11 +15,11 @@ var (
 
 // User is user model
 type User struct {
-	Username string
-	Password string
-	Email    string
-	Bio      string
-	Image    string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Bio      string `json:"bio"`
+	Image    string `json:"image"`
 }
 
 func NewUser(username, password, email, bio, image string) *User {
@@ -34,7 +34,7 @@ func NewUser(username, password, email, bio, image string) *User {
 
 // Validate validates fields of user model
 func (u User) Validate() error {
-	return validation.ValidateStruct(&u,
+	err := validation.ValidateStruct(&u,
 		validation.Field(
 			&u.Username,
 			validation.Required,
@@ -43,6 +43,10 @@ func (u User) Validate() error {
 		validation.Field(&u.Email, validation.Required, is.Email),
 		validation.Field(&u.Password, validation.Required),
 	)
+	if err != nil {
+		return errors.Wrap(err, "cannot validate user")
+	}
+	return nil
 }
 
 // HashPassword makes password field crypted
@@ -62,4 +66,9 @@ func (u *User) HashPassword() error {
 func (u *User) CheckPassword(plain string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plain))
 	return err == nil
+}
+
+// HidePassword hide user password
+func (u *User) HidePassword() {
+	u.Password = ""
 }

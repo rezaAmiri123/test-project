@@ -55,7 +55,7 @@ func newRouter(httpServer *HttpServer) chi.Router {
 	setMiddlewares(apiRouter)
 	apiRouter.Route("/users", func(r chi.Router) {
 		r.Get("/{username}", httpServer.GetProfile)
-		r.Post("/", httpServer.CreateUser)
+		r.Post("/register", httpServer.CreateUser)
 	})
 
 	rootRouter := chi.NewRouter()
