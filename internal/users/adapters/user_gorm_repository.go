@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -16,6 +17,15 @@ type GORMUserModel struct {
 	Email    string `json:"email"`
 	Bio      string `json:"bio"`
 	Image    string `json:"image"`
+}
+
+type GORMConfig struct {
+	Type string
+	User string
+	Pass string
+	Name string
+	Host string
+	Port string
 }
 
 func (m *GORMUserModel) protoDomainUser() *user.User {
@@ -40,11 +50,14 @@ type GORMUserRepository struct {
 	db *gorm.DB
 }
 
-func NewGORMUserRepository(db *gorm.DB) *GORMUserRepository {
-	if db == nil {
-		panic("missing gorm db")
+func NewGORMUserRepository(config GORMConfig) (*GORMUserRepository, error) {
+	DBString := "%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local"
+	URL := fmt.Sprintf(DBString, config.User, config.Pass, config.Host, config.Port, config.Name)
+	db, err := gorm.Open(config.Type, URL)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot connect database")
 	}
-	return &GORMUserRepository{db: db}
+	return &GORMUserRepository{db: db}, nil
 }
 
 func (r *GORMUserRepository) Create(ctx context.Context, user *user.User) error {

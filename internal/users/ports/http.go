@@ -11,16 +11,16 @@ import (
 )
 
 type HttpServer struct {
-	app app.Application
+	app *app.Application
 }
 
-func NewHttpServer(addr string, application app.Application) *http.Server {
+func NewHttpServer(addr string, application *app.Application) (*http.Server,error) {
 	httpServer := &HttpServer{app: application}
 	router := newRouter(httpServer)
 	return &http.Server{
 		Addr:    addr,
 		Handler: router,
-	}
+	},nil
 }
 
 func (h *HttpServer) CreateUser(w http.ResponseWriter, r *http.Request) {
