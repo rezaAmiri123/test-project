@@ -32,8 +32,8 @@ func (m *MemoryUserRepository) GetByUsername(ctx context.Context, username strin
 	defer m.mu.RUnlock()
 
 	u, ok := m.users[username]
-	if ok {
-		return &u, nil
+	if !ok {
+		return nil, errors.New("user not found")
 	}
-	return nil, errors.New("user not found")
+	return &u, nil
 }
