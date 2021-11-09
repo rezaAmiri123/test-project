@@ -16,7 +16,7 @@ func NewGetProfileHandler(userRepo user.Repository) GetProfileHandler {
 	return GetProfileHandler{userRepo: userRepo}
 }
 
-func (h GetProfileHandler) Handler(ctx context.Context, username string) (*user.User, error) {
+func (h GetProfileHandler) Handle(ctx context.Context, username string) (*user.User, error) {
 	u, err := h.userRepo.GetByUsername(ctx, username)
 	if err != nil {
 		return &user.User{}, err

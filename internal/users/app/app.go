@@ -17,6 +17,7 @@ type Commands struct {
 
 type Queries struct {
 	GetProfile query.GetProfileHandler
+	GetUserToken query.GetUserTokenHandler
 }
 
 func NewApplication(repository user.Repository) *Application {
@@ -26,6 +27,7 @@ func NewApplication(repository user.Repository) *Application {
 		},
 		Queries: Queries{
 			GetProfile: query.NewGetProfileHandler(repository),
+			GetUserToken: query.NewGetUserTokenHandler(repository),
 		},
 	}
 }
