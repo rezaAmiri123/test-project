@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UsersServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
+	VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type usersServiceClient struct {
@@ -39,9 +39,9 @@ func (c *usersServiceClient) Login(ctx context.Context, in *LoginRequest, opts .
 	return out, nil
 }
 
-func (c *usersServiceClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
-	out := new(AuthenticateResponse)
-	err := c.cc.Invoke(ctx, "/users.UsersService/Authenticate", in, out, opts...)
+func (c *usersServiceClient) VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/users.UsersService/VerifyToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *usersServiceClient) Authenticate(ctx context.Context, in *AuthenticateR
 // for forward compatibility
 type UsersServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
+	VerifyToken(context.Context, *VerifyTokenRequest) (*User, error)
 	mustEmbedUnimplementedUsersServiceServer()
 }
 
@@ -64,8 +64,8 @@ type UnimplementedUsersServiceServer struct {
 func (UnimplementedUsersServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedUsersServiceServer) Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
+func (UnimplementedUsersServiceServer) VerifyToken(context.Context, *VerifyTokenRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
 }
 func (UnimplementedUsersServiceServer) mustEmbedUnimplementedUsersServiceServer() {}
 
@@ -98,20 +98,20 @@ func _UsersService_Login_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UsersService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthenticateRequest)
+func _UsersService_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServiceServer).Authenticate(ctx, in)
+		return srv.(UsersServiceServer).VerifyToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/users.UsersService/Authenticate",
+		FullMethod: "/users.UsersService/VerifyToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServiceServer).Authenticate(ctx, req.(*AuthenticateRequest))
+		return srv.(UsersServiceServer).VerifyToken(ctx, req.(*VerifyTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,8 +128,8 @@ var UsersService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UsersService_Login_Handler,
 		},
 		{
-			MethodName: "Authenticate",
-			Handler:    _UsersService_Authenticate_Handler,
+			MethodName: "VerifyToken",
+			Handler:    _UsersService_VerifyToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

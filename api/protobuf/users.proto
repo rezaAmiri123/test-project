@@ -6,7 +6,11 @@ option go_package="github.com/rezaAmiri123/test-project/internal/users";
 
 service UsersService {
   rpc Login(LoginRequest) returns (LoginResponse){}
-  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse){}
+  rpc VerifyToken(VerifyTokenRequest) returns (User){}
+}
+
+message User{
+  string username=1;
 }
 
 message LoginRequest{
@@ -18,10 +22,6 @@ message LoginResponse{
   string token=1;
 }
 
-message AuthenticateRequest{
+message VerifyTokenRequest{
   string token=1;
-}
-
-message AuthenticateResponse{
-  string username=1;
 }

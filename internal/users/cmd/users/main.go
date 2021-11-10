@@ -42,7 +42,9 @@ func setupFlags(cmd *cobra.Command) error {
 	//}
 	cmd.Flags().String("config-file", "", "path to config file.")
 	cmd.Flags().String("http-server-addr", "localhost", "http server address.")
-	cmd.Flags().Int("http-server-port", 8080, "http server address.")
+	cmd.Flags().Int("http-server-port", 8080, "http server port.")
+	cmd.Flags().String("grpc-server-addr", "localhost", "grpc server address.")
+	cmd.Flags().Int("grpc-server-port", 8081, "grpc server port.")
 	cmd.Flags().String("database-type", "mysql", "database type like mysql.")
 	cmd.Flags().String("database-name", "go", "database name.")
 	cmd.Flags().String("database-username", "go", "database username.")
@@ -72,6 +74,8 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 
 	c.cfg.HttpServerAddr = viper.GetString("http-server-addr")
 	c.cfg.HttpServerPort = viper.GetInt("http-server-port")
+	c.cfg.GRPCServerAddr = viper.GetString("grpc-server-addr")
+	c.cfg.GRPCServerPort = viper.GetInt("grpc-server-port")
 	c.cfg.DBConfig.Type = viper.GetString("database-type")
 	c.cfg.DBConfig.Name = viper.GetString("database-name")
 	c.cfg.DBConfig.User = viper.GetString("database-username")
