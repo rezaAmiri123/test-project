@@ -57,5 +57,6 @@ func (s *grpcServer) VerifyToken(ctx context.Context, req *api.VerifyTokenReques
 	}
 	return &api.User{
 		Username: u.Username,
+		Uuid: u.UUID,
 	}, nil
 }

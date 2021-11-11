@@ -13,6 +13,7 @@ import (
 // User is user model
 type GORMUserModel struct {
 	gorm.Model
+	UUID     string `json:"uuid"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
@@ -31,6 +32,7 @@ type GORMConfig struct {
 
 func (m *GORMUserModel) protoDomainUser() *user.User {
 	return &user.User{
+		UUID:     m.UUID,
 		Username: m.Username,
 		Password: m.Password,
 		Email:    m.Email,
@@ -40,6 +42,7 @@ func (m *GORMUserModel) protoDomainUser() *user.User {
 }
 
 func (m *GORMUserModel) protoGORMUser(user *user.User) {
+	m.UUID = user.UUID
 	m.Username = user.Username
 	m.Password = user.Password
 	m.Email = user.Email
@@ -58,14 +61,14 @@ func NewGORMUserRepository(config GORMConfig) (*GORMUserRepository, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot connect database")
 	}
-	if err := migrate(db);err!=nil{
-		return nil,errors.Wrap(err,"cannot migrate database")
+	if err := migrate(db); err != nil {
+		return nil, errors.Wrap(err, "cannot migrate database")
 	}
 	return &GORMUserRepository{db: db}, nil
 }
 
 func (r *GORMUserRepository) Create(ctx context.Context, user *user.User) error {
-	gormUser :=&GORMUserModel{}
+	gormUser := &GORMUserModel{}
 	gormUser.protoGORMUser(user)
 	err := r.db.Create(gormUser).Error
 	if err != nil {

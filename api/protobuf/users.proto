@@ -11,6 +11,7 @@ service UsersService {
 
 message User{
   string username=1;
+  string uuid=2;
 }
 
 message LoginRequest{

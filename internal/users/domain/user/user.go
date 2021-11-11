@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,6 +16,7 @@ var (
 
 // User is user model
 type User struct {
+	UUID     string `json:"uuid"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
@@ -24,6 +26,7 @@ type User struct {
 
 func NewUser(username, password, email, bio, image string) *User {
 	return &User{
+		UUID:     uuid.New().String(),
 		Username: username,
 		Password: password,
 		Email:    email,
@@ -42,9 +45,18 @@ func (u User) Validate() error {
 		),
 		validation.Field(&u.Email, validation.Required, is.Email),
 		validation.Field(&u.Password, validation.Required),
+		validation.Field(&u.UUID, validation.Required, is.UUID),
 	)
 	if err != nil {
 		return errors.Wrap(err, "cannot validate user")
+	}
+	return nil
+}
+
+// HashPassword makes password field crypted
+func (u *User) SetUUID() error {
+	if u.UUID ==""{
+		u.UUID = uuid.New().String()
 	}
 	return nil
 }

@@ -17,6 +17,9 @@ func NewCreateUserHandler(userRepo user.Repository) CreateUserHandler {
 }
 
 func (h CreateUserHandler) Handle(ctx context.Context, user *user.User)error  {
+	if err:=user.SetUUID();err!=nil{
+		return err
+	}
 	if err :=user.Validate();err!= nil{
 		return err
 	}
