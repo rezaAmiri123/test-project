@@ -6,4 +6,6 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.11.2
+	github.com/jinzhu/gorm v1.9.16
+	github.com/pkg/errors v0.9.1
 )
