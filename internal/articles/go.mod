@@ -9,4 +9,6 @@ require (
 	github.com/gosimple/slug v1.11.2
 	github.com/jinzhu/gorm v1.9.16
 	github.com/pkg/errors v0.9.1
+	github.com/spf13/cobra v1.2.1
+	github.com/spf13/viper v1.9.0
 )

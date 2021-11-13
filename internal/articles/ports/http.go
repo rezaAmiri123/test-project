@@ -31,7 +31,7 @@ func newRouter(httpServer *HttpServer) chi.Router {
 	apiRouter := chi.NewRouter()
 	setMiddlewares(apiRouter)
 	apiRouter.Route("/articles", func(r chi.Router) {
-		r.Post("/create", httpServer.CreateArticle)
+		r.Post("/article", httpServer.CreateArticle)
 		r.Get("/article/{slug}", httpServer.GetArticle)
 	})
 	rootRouter := chi.NewRouter()

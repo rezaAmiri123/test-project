@@ -74,7 +74,7 @@ func migrate(db *gorm.DB) error {
 }
 
 func (r *GORMArticleRepository) Create(ctx context.Context, article *article.Article) error {
-	gormArticle := GORMArticleModel{}
+	gormArticle := &GORMArticleModel{}
 	gormArticle.protoGORMArticle(article)
 	err := r.db.Create(gormArticle).Error
 	if err != nil {
