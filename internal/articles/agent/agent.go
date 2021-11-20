@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -14,14 +13,8 @@ import (
 )
 
 type Config struct {
-	HttpServerPort int
-	HttpServerAddr string
-
-	DBConfig adapters.GORMConfig
-}
-
-func (c Config) HttpAddr() string {
-	return fmt.Sprintf("%s:%d", c.HttpServerAddr, c.HttpServerPort)
+	HttpServerConfig ports.HttpConfig
+	DBConfig         adapters.GORMConfig
 }
 
 type Agent struct {
@@ -72,10 +65,7 @@ func (a *Agent) setupApplication() error {
 }
 
 func (a *Agent) setupHttpServer() error {
-	httpConfig := &ports.HttpConfig{
-		Addr: a.HttpAddr(),
-	}
-	httpServer, err := ports.NewHttpServer(httpConfig, a.Application)
+	httpServer, err := ports.NewHttpServer(a.HttpServerConfig, a.Application)
 	if err != nil {
 		return err
 	}

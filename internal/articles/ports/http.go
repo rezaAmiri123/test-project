@@ -2,11 +2,14 @@ package ports
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/rezaAmiri123/test-project/internal/articles/app"
 	"github.com/rezaAmiri123/test-project/internal/articles/domain/article"
-	"net/http"
+	"github.com/rezaAmiri123/test-project/internal/common/server"
 )
 
 type HttpServer struct {
@@ -14,29 +17,33 @@ type HttpServer struct {
 }
 
 type HttpConfig struct {
-	Addr string
+	HttpServerPort int
+	HttpServerAddr string
+
+	AuthServer server.AuthConfig
 }
 
-func NewHttpServer(config *HttpConfig, application *app.Application) (*http.Server, error) {
+func NewHttpServer(config HttpConfig, application *app.Application) (*http.Server, error) {
 	srv := &http.Server{
-		Addr: config.Addr,
+		Addr: fmt.Sprintf("%s:%d", config.HttpServerAddr, config.HttpServerPort),
 	}
 	httpServer := &HttpServer{app: application}
-	router := newRouter(httpServer)
-	srv.Handler = router
-	return srv, nil
-}
-
-func newRouter(httpServer *HttpServer) chi.Router {
 	apiRouter := chi.NewRouter()
 	setMiddlewares(apiRouter)
+	authMiddleware, err := server.NewAuthMiddleware(config.AuthServer)
+	if err != nil {
+		return nil, err
+	}
+	apiRouter.Use(authMiddleware)
 	apiRouter.Route("/articles", func(r chi.Router) {
 		r.Post("/article", httpServer.CreateArticle)
 		r.Get("/article/{slug}", httpServer.GetArticle)
 	})
 	rootRouter := chi.NewRouter()
 	rootRouter.Mount("/api/v1", apiRouter)
-	return rootRouter
+
+	srv.Handler = rootRouter
+	return srv, nil
 }
 
 func (h *HttpServer) CreateArticle(w http.ResponseWriter, r *http.Request) {

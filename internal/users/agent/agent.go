@@ -12,6 +12,7 @@ import (
 	"github.com/rezaAmiri123/test-project/internal/users/domain/user"
 	"github.com/rezaAmiri123/test-project/internal/users/ports"
 	"google.golang.org/grpc"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -50,6 +51,7 @@ func NewAgent(config Config) (*Agent, error) {
 		shutdowns: make(chan struct{}),
 	}
 	setupsFn := []func() error{
+		a.setupLogger,
 		a.setupRepository,
 		a.setupApplication,
 		a.setupHttpServer,
@@ -61,6 +63,15 @@ func NewAgent(config Config) (*Agent, error) {
 		}
 	}
 	return a, nil
+}
+
+func (a *Agent) setupLogger() error {
+	logger,err := zap.NewDevelopment()
+	if err!= nil{
+		return err
+	}
+	zap.ReplaceGlobals(logger)
+	return nil
 }
 
 func (a *Agent) setupHttpServer() error {

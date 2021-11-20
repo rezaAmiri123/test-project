@@ -39,6 +39,8 @@ func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("config-file", "", "path to config file.")
 	cmd.Flags().String("http-server-addr", "localhost", "http server address.")
 	cmd.Flags().Int("http-server-port", 8090, "http server port.")
+	cmd.Flags().String("auth-server-addr", "localhost", "auth server address.")
+	cmd.Flags().Int("auth-server-port", 8080, "auth server port.")
 	//cmd.Flags().String("grpc-server-addr", "localhost", "grpc server address.")
 	//cmd.Flags().Int("grpc-server-port", 8081, "grpc server port.")
 	cmd.Flags().String("database-type", "mysql", "database type like mysql.")
@@ -66,8 +68,10 @@ func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	c.cfg.HttpServerAddr = viper.GetString("http-server-addr")
-	c.cfg.HttpServerPort = viper.GetInt("http-server-port")
+	c.cfg.HttpServerConfig.HttpServerAddr = viper.GetString("http-server-addr")
+	c.cfg.HttpServerConfig.HttpServerPort = viper.GetInt("http-server-port")
+	c.cfg.HttpServerConfig.AuthServer.GRPCUserAddr = viper.GetString("auth-server-addr")
+	c.cfg.HttpServerConfig.AuthServer.GRPCUserPort = viper.GetInt("auth-server-port")
 	//c.cfg.GRPCServerAddr = viper.GetString("grpc-server-addr")
 	//c.cfg.GRPCServerPort = viper.GetInt("grpc-server-port")
 	c.cfg.DBConfig.Type = viper.GetString("database-type")
