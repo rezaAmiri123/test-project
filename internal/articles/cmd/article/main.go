@@ -40,7 +40,7 @@ func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("http-server-addr", "localhost", "http server address.")
 	cmd.Flags().Int("http-server-port", 8090, "http server port.")
 	cmd.Flags().String("auth-server-addr", "localhost", "auth server address.")
-	cmd.Flags().Int("auth-server-port", 8080, "auth server port.")
+	cmd.Flags().Int("auth-server-port", 8081, "auth server port.")
 	//cmd.Flags().String("grpc-server-addr", "localhost", "grpc server address.")
 	//cmd.Flags().Int("grpc-server-port", 8081, "grpc server port.")
 	cmd.Flags().String("database-type", "mysql", "database type like mysql.")

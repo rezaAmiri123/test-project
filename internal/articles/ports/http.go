@@ -10,6 +10,7 @@ import (
 	"github.com/rezaAmiri123/test-project/internal/articles/app"
 	"github.com/rezaAmiri123/test-project/internal/articles/domain/article"
 	"github.com/rezaAmiri123/test-project/internal/common/server"
+	"github.com/rezaAmiri123/test-project/internal/common/auth"
 )
 
 type HttpServer struct {
@@ -52,8 +53,12 @@ func (h *HttpServer) CreateArticle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	userUUID := "xxxxxxxxxxxxxxxxxxxxxxx"
-	if err := h.app.Commands.CreateArticle.Handle(r.Context(), a, userUUID); err != nil {
+	u,err:=auth.UserFromCtx(r.Context())
+	if err!= nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := h.app.Commands.CreateArticle.Handle(r.Context(), a, u.UUID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

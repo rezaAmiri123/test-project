@@ -16,8 +16,7 @@ type AuthConfig struct {
 
 func NewAuthMiddleware(config AuthConfig) (func(http.Handler) http.Handler, error){
 	addr := fmt.Sprintf("%s:%d", config.GRPCUserAddr, config.GRPCUserPort)
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
+	opts := []grpc.DialOption{grpc.WithInsecure()}
 	conn, err := grpc.Dial(addr, opts...)
 	if err!= nil{
 		return nil, err
