@@ -51,6 +51,10 @@ func setupFlags(cmd *cobra.Command) error {
 	cmd.Flags().String("database-password", "go", "database password.")
 	cmd.Flags().String("database-host", "localhost", "database host address.")
 	cmd.Flags().String("database-port", "3306", "database host address.")
+	cmd.Flags().String("tracer-service-name", "users", "tracer service name.")
+	cmd.Flags().String("tracer-service-host-port", "localhost:6831", "tracer host port.")
+	cmd.Flags().Bool("tracer-enable", true, "tracer host enabled.")
+	cmd.Flags().Bool("tracer-log-spans", false, "tracer host spans.")
 
 
 

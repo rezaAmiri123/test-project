@@ -3,16 +3,19 @@ package agent
 import (
 	"context"
 	"fmt"
+	"github.com/opentracing/opentracing-go"
+	"io"
 	"net"
 	"net/http"
 	"sync"
 
+	"github.com/rezaAmiri123/test-project/internal/common/tracing"
 	"github.com/rezaAmiri123/test-project/internal/users/adapters"
 	"github.com/rezaAmiri123/test-project/internal/users/app"
 	"github.com/rezaAmiri123/test-project/internal/users/domain/user"
 	"github.com/rezaAmiri123/test-project/internal/users/ports"
-	"google.golang.org/grpc"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 type Config struct {
@@ -21,7 +24,9 @@ type Config struct {
 	GRPCServerPort int
 	GRPCServerAddr string
 
-	DBConfig adapters.GORMConfig
+	DBConfig     adapters.GORMConfig
+	jaegerConfig *tracing.Config
+	jaegerCloser io.Closer
 }
 
 func (c Config) HttpAddr() string {
@@ -56,6 +61,7 @@ func NewAgent(config Config) (*Agent, error) {
 		a.setupApplication,
 		a.setupHttpServer,
 		a.setupGRPCServer,
+		a.setupTracer,
 	}
 	for _, fn := range setupsFn {
 		if err := fn(); err != nil {
@@ -66,11 +72,21 @@ func NewAgent(config Config) (*Agent, error) {
 }
 
 func (a *Agent) setupLogger() error {
-	logger,err := zap.NewDevelopment()
-	if err!= nil{
+	logger, err := zap.NewDevelopment()
+	if err != nil {
 		return err
 	}
 	zap.ReplaceGlobals(logger)
+	return nil
+}
+
+func (a *Agent) setupTracer() error {
+	tracer, closer, err := tracing.NewJaegerTracer(a.jaegerConfig)
+	if err != nil{
+		return err
+	}
+	a.Config.jaegerCloser = closer
+	opentracing.SetGlobalTracer(tracer)
 	return nil
 }
 
@@ -141,6 +157,9 @@ func (a *Agent) Shutdown() error {
 		func() error {
 			a.grpcServer.GracefulStop()
 			return nil
+		},
+		func() error {
+			return a.jaegerCloser.Close()
 		},
 	}
 	for _, fn := range shutdown {
